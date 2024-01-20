@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "e7yRCIAsnivNnOwzCc8NHnXAeKbU8Q9CgDgVeCyXPevrYGQLEcJ1/124B8siHD43Pn/WaYzFRuBaNyoAsBGJbA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\omitc\\source\\repos\\BossBattleCourseWork\\BossBattleCourseWork\\BossBattleCourseWork.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\omitc\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\omitc\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
+  ],
+  "logs": []
+}
