@@ -14,8 +14,7 @@ namespace BossBattleCourseWork
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
         public float Radius { get; set; }
-
-        public float Speed = 30;
+        public float Speed = 50;
         public Input Input = new Input()
         {
             Left = Keys.A , Right = Keys.D, Down = Keys.S, Up = Keys.W
@@ -40,11 +39,11 @@ namespace BossBattleCourseWork
             {
                 if (Velocity.X > 0 && IsTouchingLeft(rectangle) || Velocity.X < 0 && IsTouchingRight(rectangle))
                 {
-                    velocityX = 0;
+                    velocityX = -velocityX;
                 }
                 if (Velocity.Y > 0 && IsTouchingTop(rectangle) || Velocity.Y < 0 && IsTouchingBottom(rectangle))
                 {
-                    velocityY = 0;
+                    velocityY = -velocityY;
                 }
             }
             Velocity = new Vector2(velocityX, velocityY);
@@ -80,43 +79,38 @@ namespace BossBattleCourseWork
         }
 
         //Collisions stuff
-
-        protected bool IsTouchingLeft(Rectangle shape)
+        private bool IsTouchingLeft(Rectangle rectangle)
         {
-            return Position.X - Radius < shape.Position.X + shape.Width &&
-                   Position.X - Radius > shape.Position.X &&
-                   Position.Y > shape.Position.Y &&
-                   Position.Y < shape.Position.Y + shape.Height;
+            return Position.X - Radius < rectangle.Position.X + rectangle.Width / 2 &&
+                   Position.X + Radius > rectangle.Position.X - rectangle.Width / 2 &&
+                   Position.Y < rectangle.Position.Y + rectangle.Height / 2 &&
+                   Position.Y > rectangle.Position.Y - rectangle.Height / 2;
         }
 
-        protected bool IsTouchingRight(Rectangle shape)
+        private bool IsTouchingRight(Rectangle rectangle)
         {
-            return Position.X + Radius > shape.Position.X &&
-                   Position.X + Radius < shape.Position.X + shape.Width &&
-                   Position.Y > shape.Position.Y &&
-                   Position.Y < shape.Position.Y + shape.Height;
+            return Position.X + Radius > rectangle.Position.X - rectangle.Width / 2 &&
+                   Position.X - Radius < rectangle.Position.X + rectangle.Width / 2 &&
+                   Position.Y < rectangle.Position.Y + rectangle.Height / 2 &&
+                   Position.Y > rectangle.Position.Y - rectangle.Height / 2;
         }
 
-        protected bool IsTouchingTop(Rectangle shape)
+        private bool IsTouchingTop(Rectangle rectangle)
         {
-            return Position.Y - Radius < shape.Position.Y + shape.Height &&
-                   Position.Y - Radius > shape.Position.Y &&
-                   Position.X > shape.Position.X &&
-                   Position.X < shape.Position.X + shape.Width;
+            return Position.Y - Radius < rectangle.Position.Y + rectangle.Height / 2 &&
+                   Position.Y + Radius > rectangle.Position.Y - rectangle.Height / 2 &&
+                   Position.X < rectangle.Position.X + rectangle.Width / 2 &&
+                   Position.X > rectangle.Position.X - rectangle.Width / 2;
         }
 
-        protected bool IsTouchingBottom(Rectangle shape)
+        private bool IsTouchingBottom(Rectangle rectangle)
         {
-            return Position.Y + Radius > shape.Position.Y &&
-                   Position.Y + Radius < shape.Position.Y + shape.Height &&
-                   Position.X > shape.Position.X &&
-                   Position.X < shape.Position.X + shape.Width;
+            return Position.Y + Radius > rectangle.Position.Y - rectangle.Height / 2 &&
+                   Position.Y - Radius < rectangle.Position.Y + rectangle.Height / 2 &&
+                   Position.X < rectangle.Position.X + rectangle.Width / 2 &&
+                   Position.X > rectangle.Position.X - rectangle.Width / 2;
         }
 
-        public bool IsInside(Vector2 point)
-        {
-            return (point - Position).LengthSquared() < Radius * Radius;
-        }
     }
 }
 

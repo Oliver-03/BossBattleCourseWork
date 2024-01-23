@@ -64,12 +64,12 @@ namespace BossBattleCourseWork
         }
         public static void Draw(this ShapeBatcher shapeBatcher, Player player, Color colour)
         {
-            shapeBatcher.DrawCircle(player.Position, player.Radius, 8, 2, colour);
+            shapeBatcher.DrawCircle(player.Position, player.Radius, 20, 2, colour);
         }
 
-        /*public static void Draw(this ShapeBatcher shapeBatcher, Agent agent, Color colour)
+        public static void Draw(this ShapeBatcher shapeBatcher, Agent agent, Color colour)
         {
             shapeBatcher.DrawCircle(agent.Position, agent.Radius, 8, 2, colour);
-        }*/
+        }
     }
 }

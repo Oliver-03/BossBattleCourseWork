@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossBattleCourseWork.States;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -9,11 +10,10 @@ namespace BossBattleCourseWork
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-
         private Player _player;
         private ShapeBatcher _shapeBatcher;
         private List<Rectangle> Map;
+        private Agent _agent;
 
         public Game1()
         {
@@ -50,25 +50,27 @@ namespace BossBattleCourseWork
             Map.Add(new Rectangle(new Vector2(750, 900), Color.Black, 250, 50));
             Map.Add(new Rectangle(new Vector2(1200, 625), Color.Black, 400, 300));
             Map.Add(new Rectangle(new Vector2(1200, 880), Color.Black, 300, 75));
+
+            // Player & agent initialization
             _player = new Player(new Vector2(550, 500), new Vector2(0, 0), 10);
+            _agent = new Agent(new Vector2(530, 500), new Vector2(0, 0), 10, Color.Blue);
+            _agent.StateMachine.ChangeState(new IdleState(_player));
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
 
             // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
-
-            // TODO: Add your update logic here
             float pSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _player.Update(pSeconds, Map);
-            Debug.WriteLine(_player.Velocity);
+            _agent.StateMachine.Update(gameTime);
                  base.Update(gameTime);
         }
 
@@ -83,6 +85,7 @@ namespace BossBattleCourseWork
                 _shapeBatcher.Draw(rectangle);
             }
             _shapeBatcher.Draw(_player, Color.Blue);
+            _shapeBatcher.Draw(_agent, _agent.Colour);
             _shapeBatcher.End();
             
 
