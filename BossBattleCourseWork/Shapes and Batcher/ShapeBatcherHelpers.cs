@@ -69,7 +69,7 @@ namespace BossBattleCourseWork
 
         public static void Draw(this ShapeBatcher shapeBatcher, Agent agent, Color colour)
         {
-            shapeBatcher.DrawCircle(agent.Position, agent.Radius, 8, 2, colour);
+            shapeBatcher.DrawCircle(agent.Position, agent.Radius, 20, 2, colour);
         }
     }
 }
