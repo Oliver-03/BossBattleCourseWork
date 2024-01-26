@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,8 +15,7 @@ namespace BossBattleCourseWork
         public Color Colour { get; set; }
         public float Radius { get; set; }
         public StateMachine StateMachine { get; private set; }
-        public float Speed = 45;
-
+        public float Speed = 50;
         public Agent(Vector2 position, Vector2 velocity, float radius, Color colour)
         {
             Position = position;
@@ -24,10 +24,10 @@ namespace BossBattleCourseWork
             Colour = colour;
             StateMachine = new StateMachine(this);
         }
-        
+
         public void Update(GameTime gameTime)
         {
-            
+
             StateMachine.Update(gameTime);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,9 @@ namespace BossBattleCourseWork
                     return -1;
                 else if (LowestCostToNode + Heuristic < pOther.LowestCostToNode + pOther.Heuristic)
                     return 1;
-                return 0;
+
+                // If costs and heuristics are equal, break the tie randomly
+                return new Random().Next(-1, 2);
             }
         }
 
@@ -80,6 +83,7 @@ namespace BossBattleCourseWork
 
             if (_nodeQueue.Count > 0)
             {
+                // Sorting should be more efficient with a priority queue or heap
                 _nodeQueue.Sort();
                 NodeInfo currentNode = _nodeQueue[_nodeQueue.Count - 1];
                 _nodeQueue.RemoveAt(_nodeQueue.Count - 1);
@@ -104,47 +108,35 @@ namespace BossBattleCourseWork
 
                     if (candidateID >= 0)
                     {
-                        bool visited = false;
-                        foreach (NodeInfo visitedNode in _visitedNodes)
-                        {
-                            if (visitedNode.ID == candidateID)
-                            {
-                                visited = true;
-                            }
-                        }
-
-                        bool queued = false;
-                        for (int i = 0; i < _nodeQueue.Count; i++)
-                        {
-                            if (_nodeQueue[i].ID == candidateID)
-                            {
-                                queued = true;
-                                float newCost = currentNode.LowestCostToNode + _graph.GetEdgeCost(candidateID);
-                                if (_nodeQueue[i].LowestCostToNode > newCost)
-                                {
-                                    _nodeQueue[i].LowestCostToNode = newCost;
-
-                                    for (int j = 0; j < _shortestPathTree.Count; j++)
-                                    {
-                                        if (_shortestPathTree[i].To == candidateID)
-                                        {
-                                            _shortestPathTree.RemoveAt(i);
-                                            _shortestPathTree.Add(new Edge(currentNode.ID, candidateID));
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
+                        bool visited = _visitedNodes.Any(visitedNode => visitedNode.ID == candidateID);
+                        bool queued = _nodeQueue.Any(node => node.ID == candidateID);
 
                         if (!queued && !visited)
                         {
-                            if (!queued && !visited)
-                            {
-                                float distanceToGoal = (_graph.GetNode(candidateID).Position - _graph.GetNode(To).Position).Length();
-                                float heuristic = distanceToGoal; 
+                            float newCost = currentNode.LowestCostToNode + _graph.GetEdgeCost(candidateID);
+                            float distanceToGoal = (_graph.GetNode(candidateID).Position - _graph.GetNode(To).Position).Length();
+                            float heuristic = distanceToGoal;
 
-                                _nodeQueue.Add(new NodeInfo(candidateID, currentNode.LowestCostToNode + _graph.GetEdgeCost(edge.ID), heuristic));
+                            _nodeQueue.Add(new NodeInfo(candidateID, newCost, heuristic));
+
+                            // Do not add all edges to _shortestPathTree, add only the minimum cost edge
+                            if (_shortestPathTree.Count == 0 || newCost + heuristic < currentNode.LowestCostToNode + currentNode.Heuristic)
+                            {
+                                // Append the new edge to the existing path
+                                _shortestPathTree.Add(new Edge(currentNode.ID, candidateID));
+                            }
+                        }
+                        else if (queued)
+                        {
+                            float newCost = currentNode.LowestCostToNode + _graph.GetEdgeCost(candidateID);
+                            int index = _nodeQueue.FindIndex(node => node.ID == candidateID);
+
+                            if (_nodeQueue[index].LowestCostToNode > newCost)
+                            {
+                                _nodeQueue[index].LowestCostToNode = newCost;
+
+                                // Update the shortest path tree
+                                _shortestPathTree.Clear();
                                 _shortestPathTree.Add(new Edge(currentNode.ID, candidateID));
                             }
                         }
@@ -156,3 +148,4 @@ namespace BossBattleCourseWork
         }
     }
 }
+

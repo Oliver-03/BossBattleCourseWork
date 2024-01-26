@@ -13,14 +13,14 @@ namespace BossBattleCourseWork
         private float idleDuration;
         private float elapsedTime;
         private Player _player;
-        private List<Rectangle> map;
+        private List<Rectangle> _map;
         private Graph _graph;
         public IdleState(Player player, List<Rectangle> map, Graph graph)
         {
-            idleDuration = 10f;
+            idleDuration = 5f;
             elapsedTime = 0f;
             _player = player;
-            this.map = map;
+            _map = map;
             _graph = graph;
         }
 
@@ -37,7 +37,7 @@ namespace BossBattleCourseWork
 
             if (elapsedTime >= idleDuration)
             {
-                agent.StateMachine.ChangeState(new PursueState(_player, _graph));
+                agent.StateMachine.ChangeState(new PursueState(_player, _graph, _map));
             }
         }
 

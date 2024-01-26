@@ -16,6 +16,7 @@ namespace BossBattleCourseWork
         private Agent _agent;
         private Graph _graph;
         private PathMap path;
+        private GameLogic _logic;
 
         public Game1()
         {
@@ -55,10 +56,11 @@ namespace BossBattleCourseWork
 
             _graph = new Graph();
             path = new PathMap(_graph);
-            // Player & agent initialization
-            _player = new Player(new Vector2(550, 500), new Vector2(0, 0), 15);
-            _agent = new Agent(new Vector2(530, 500), new Vector2(0, 0), 15, Color.Blue);
             
+            // Player & agent initialization
+            _player = new Player(new Vector2(550, 550), new Vector2(0, 0), 25);
+            _agent = new Agent(new Vector2(550, 500), new Vector2(0, 0), 25, Color.Blue);
+            _logic = new GameLogic(_agent, _player, Map);
 
             base.Initialize();
         }
@@ -75,7 +77,12 @@ namespace BossBattleCourseWork
             float pSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _player.Update(pSeconds, Map);
             _agent.StateMachine.Update(gameTime);
-                 base.Update(gameTime);
+            _logic.Update(gameTime, Map);
+            if (_player.IsDead == true)
+            {
+                Exit();
+            }
+            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -102,16 +109,6 @@ namespace BossBattleCourseWork
             }
             _shapeBatcher.Draw(_player, Color.Blue);
             _shapeBatcher.Draw(_agent, _agent.Colour);
-            foreach(Node node in _graph.Nodes)
-            {
-                _shapeBatcher.DrawCircle(node.Position, 5, 10, 5, Color.Yellow);
-            }
-
-            foreach (Edge edge in _graph.Edges)
-            {
-                _shapeBatcher.DrawLine(_graph.GetNode(edge.From).Position,
-                    _graph.GetNode(edge.To).Position, 1, Color.Red);
-            }
             _shapeBatcher.End();
             
 

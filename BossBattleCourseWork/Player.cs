@@ -15,6 +15,8 @@ namespace BossBattleCourseWork
         public Vector2 Velocity { get; set; }
         public float Radius { get; set; }
         public float Speed = 50;
+        public bool IsDead { get; set; }
+
         public Input Input = new Input()
         {
             Left = Keys.A , Right = Keys.D, Down = Keys.S, Up = Keys.W
@@ -28,6 +30,7 @@ namespace BossBattleCourseWork
             Position = position;
             Velocity = velocity;
             Radius = radius;
+            IsDead = false;
         }
 
 

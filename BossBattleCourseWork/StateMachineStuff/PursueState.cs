@@ -11,32 +11,44 @@ namespace BossBattleCourseWork
     public class PursueState : State
     {
         private Player _player;
-        private Graph _graph; 
+        private Graph _graph;
+        private List<Rectangle> _map;
 
-        public PursueState(Player player, Graph graph)
+        public PursueState(Player player, Graph graph, List<Rectangle> map)
         {
             _player = player;
-            _graph = graph;  
+            _graph = graph;
+            _map = map;
+
         }
 
         public override void Enter(Agent agent)
         {
-            
+           
         }
 
         public override void Execute(Agent agent, GameTime gameTime)
         {
-            Vector2 direction = _player.Position - agent.Position;
-            direction.Normalize();
-
             List<Vector2> path = AStarPathfinding(agent.Position, _player.Position, _graph);
 
-            if (path.Count > 0)
+            if (path.Count > 1)
             {
+                path.RemoveAt(0);
                 Vector2 nextWaypoint = path[0];
+                float distanceToWaypoint = Vector2.Distance(agent.Position, nextWaypoint);
+                float distanceThreshold = 00.0f;  // Adjust this threshold as needed
+
+                if (distanceToWaypoint <= distanceThreshold)
+                {
+                    // Move to the next waypoint
+                    path.RemoveAt(0);
+                }
+
                 Vector2 desiredVelocity = Vector2.Normalize(nextWaypoint - agent.Position) * agent.Speed;
                 agent.Velocity = desiredVelocity;
-                Debug.WriteLine(desiredVelocity);
+
+                // Update agent's position based on velocity
+                agent.Position += agent.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             else
             {
@@ -44,21 +56,10 @@ namespace BossBattleCourseWork
             }
         }
 
+
         public override void Exit(Agent agent)
         {
-
-        }
-
-        private List<Vector2> AStarPathfinding(Vector2 start, Vector2 goal, Graph graph)
-        {
-            AStarSearch astar = new AStarSearch(graph, GetClosestNode(start, graph), GetClosestNode(goal, graph));
-
-            while (!astar.IsFinished)
-            {
-                astar.Update(0.1f); 
-            }
-
-            return astar.ShortestPath.Select(edge => graph.GetNode(edge.To).Position).ToList();
+            // Clean up or perform any necessary actions when exiting the PursueState
         }
 
         private int GetClosestNode(Vector2 position, Graph graph)
@@ -75,8 +76,28 @@ namespace BossBattleCourseWork
                     closestNodeID = node.ID;
                 }
             }
-
             return closestNodeID;
+        }
+
+        private List<Vector2> AStarPathfinding(Vector2 start, Vector2 goal, Graph graph)
+        {
+            int startNodeID = GetClosestNode(start, graph);
+            int goalNodeID = GetClosestNode(goal, graph);
+
+            // Check if the agent is already at the goal
+            if (startNodeID == goalNodeID)
+            {
+                return new List<Vector2> { goal };
+            }
+
+            AStarSearch astar = new AStarSearch(graph, startNodeID, goalNodeID);
+
+            while (!astar.IsFinished)
+            {
+                astar.Update(0.1f);
+            }
+
+            return astar.ShortestPath.Select(edge => graph.GetNode(edge.To).Position).ToList();
         }
     }
 }
