@@ -14,7 +14,7 @@ namespace BossBattleCourseWork
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
         public float Radius { get; set; }
-        public float Speed = 50;
+        public float Speed = 70;
         public bool IsDead { get; set; }
 
         public Input Input = new Input()

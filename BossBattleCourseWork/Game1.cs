@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace BossBattleCourseWork
 {
@@ -12,11 +13,21 @@ namespace BossBattleCourseWork
         private GraphicsDeviceManager _graphics;
         private Player _player;
         private ShapeBatcher _shapeBatcher;
+
         private List<Rectangle> Map;
         private Agent _agent;
+        private Agent _agent2;
+        private Agent _agent3;
+        private Agent _agent4;
+
         private Graph _graph;
         private PathMap path;
         private GameLogic _logic;
+
+        private List<Agent> _agents;
+        Patrol agent2Patrol;
+        Patrol agent3Patrol;
+        Patrol agent4Patrol;
 
         public Game1()
         {
@@ -59,9 +70,26 @@ namespace BossBattleCourseWork
             
             // Player & agent initialization
             _player = new Player(new Vector2(550, 550), new Vector2(0, 0), 25);
-            _agent = new Agent(new Vector2(550, 500), new Vector2(0, 0), 25, Color.Blue);
-            _logic = new GameLogic(_agent, _player, Map);
+            _agent = new Agent(new Vector2(550, 500), new Vector2(0, 0), 25, Color.Blue, 1);
 
+            _agent2 = new Agent(new Vector2(500, 950), new Vector2(0, 0), 25, Color.Blue, 2);
+            agent2Patrol = new Patrol(_player, _graph, Map, new Vector2(500, 950), new Vector2(250, 950), new Vector2(250, 800), new Vector2(500, 800));
+
+            _agent3 = new Agent(new Vector2(1000, 950), new Vector2(0, 0), 25, Color.Blue, 2);
+            agent3Patrol = new Patrol(_player, _graph, Map, new Vector2(1000, 950), new Vector2(1000, 800), new Vector2(1400, 800), new Vector2(1400, 950));
+
+            _agent4 = new Agent(new Vector2(1050, 400), new Vector2(0, 0), 25, Color.Blue, 2);
+            agent4Patrol = new Patrol(_player, _graph, Map, new Vector2(1050, 400), new Vector2(1050, 50), new Vector2(1450, 50), new Vector2(1450, 400));
+            _agents = new List<Agent>
+            {
+                _agent
+                , _agent2
+                , _agent3
+                , _agent4
+            };
+
+            _logic = new GameLogic(_agents, _player, Map);
+            
             base.Initialize();
         }
 
@@ -69,19 +97,28 @@ namespace BossBattleCourseWork
         {
             path.NodeCreator(Map);
             path.CreateEdges();
-            _agent.StateMachine.ChangeState(new IdleState(_player, Map, _graph));
+           // _agent.StateMachine.ChangeState(new IdleState(_player, Map, _graph));
+            _agent2.StateMachine.ChangeState(agent2Patrol);
+            _agent3.StateMachine.ChangeState(agent3Patrol);
+            _agent4.StateMachine.ChangeState(agent4Patrol);
         }
 
         protected override void Update(GameTime gameTime)
         {
             float pSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _player.Update(pSeconds, Map);
+
             _agent.StateMachine.Update(gameTime);
+            _agent2.StateMachine.Update(gameTime);
+            _agent3.StateMachine.Update(gameTime);
+            _agent4.StateMachine.Update(gameTime);
+
             _logic.Update(gameTime, Map);
             if (_player.IsDead == true)
             {
                 Exit();
             }
+             _agents.RemoveAll(agent => agent.IsDead);
             base.Update(gameTime);
         }
 
@@ -108,7 +145,10 @@ namespace BossBattleCourseWork
                 _shapeBatcher.Draw(rectangle);
             }
             _shapeBatcher.Draw(_player, Color.Blue);
-            _shapeBatcher.Draw(_agent, _agent.Colour);
+            foreach (Agent agent in _agents)
+            {
+                _shapeBatcher.Draw(agent, agent.Colour);
+            }
             _shapeBatcher.End();
             
 

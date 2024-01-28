@@ -37,7 +37,7 @@ namespace BossBattleCourseWork
 
             if (elapsedTime >= idleDuration)
             {
-                agent.StateMachine.ChangeState(new PursueState(_player, _graph, _map));
+                agent.StateMachine.ChangeState(new PursueState(_player, _graph, _map, Vector2.Zero, gameTime));
             }
         }
 
