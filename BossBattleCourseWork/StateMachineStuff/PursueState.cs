@@ -14,12 +14,14 @@ namespace BossBattleCourseWork
         private Graph _graph;
         private List<Rectangle> _map;
         private Vector2 PatrolPoint;
+        GameTime _gameTime;
         public PursueState(Player player, Graph graph, List<Rectangle> map, Vector2 patrolPoint, GameTime gameTime)
         {
             _player = player;
             _graph = graph;
             _map = map;
             PatrolPoint = patrolPoint;
+            _gameTime = gameTime;
         }
 
         public override void Enter(Agent agent)
@@ -31,65 +33,52 @@ namespace BossBattleCourseWork
         {
             List<Vector2> path = AStarPathfinding(agent.Position, _player.Position, _graph);
 
-            if (path.Count > 1)
+            if (path.Count > 0)
             {
-                Vector2 nextWaypoint = path[1];
+                Vector2 nextWaypoint = path[0];
                 float distanceToWaypoint = Vector2.Distance(agent.Position, nextWaypoint);
-                float distanceThreshold = 00.0f;  // Adjust this threshold as needed
+                float distanceThreshold = 0.1f;
 
-                if (distanceToWaypoint <= distanceThreshold)
-                {
-                    // Move to the next waypoint
-                    path.RemoveAt(0);
-                }
+                // Move to the next waypoint
 
+
+                // Calculate the desired velocity correctly
                 Vector2 desiredVelocity = Vector2.Normalize(nextWaypoint - agent.Position) * agent.Speed;
                 agent.Velocity = desiredVelocity;
 
-                // Update agent's position based on velocity
-                agent.Position += agent.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                // Update agent's position based on velocity and elapsed time
+                float distanceToTravel = agent.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (distanceToTravel > distanceToWaypoint)
+                {
+                    agent.Position = nextWaypoint;
+                }
+                else
+                {
+                    agent.Position += agent.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                }
+
+                if (Vector2.Distance(agent.Position, nextWaypoint) < distanceThreshold)
+                {
+                    // If the agent is close enough to the waypoint, remove it from the path
+                    if (path.Count > 0)
+                    {
+                        path.RemoveAt(0);
+                    }
+                }
             }
             else
             {
                 agent.Velocity = Vector2.Zero;
-            }
-            if (agent.Role == 2 && Vector2.Distance(PatrolPoint, agent.Position) > 250)
-            { 
-                agent.StateMachine.RevertState();
             }
         }
 
 
+
+
+
         public override void Exit(Agent agent)
         {
-            List<Vector2> PatrolPath = AStarPathfinding(agent.Position, PatrolPoint, _graph);
-
-            if (PatrolPath.Count > 1)
-            {
-                Vector2 nextWaypoint = PatrolPath[1];
-                float distanceToWaypoint = Vector2.Distance(agent.Position, nextWaypoint);
-                float distanceThreshold = 10.0f;  // Adjust this threshold as needed
-
-                if (distanceToWaypoint <= distanceThreshold)
-                {
-                    // Move to the next waypoint
-                    PatrolPath.RemoveAt(0);
-                }
-
-                if (PatrolPath.Count > 0)
-                {
-                    Vector2 desiredVelocity = Vector2.Normalize(PatrolPath[0] - agent.Position) * agent.Speed;
-                    agent.Velocity = desiredVelocity;
-
-                    // Update agent's position based on velocity
-                    agent.Position += agent.Velocity * 0.1f;
-                }
-            }
-            else
-            {
-                agent.Velocity = Vector2.Zero;
-            }
-            Debug.WriteLine("Im leaving now");
+           
         }
 
 

@@ -120,7 +120,7 @@ namespace BossBattleCourseWork
                             _nodeQueue.Add(new NodeInfo(candidateID, newCost, heuristic));
 
                             // Do not add all edges to _shortestPathTree, add only the minimum cost edge
-                            if (_shortestPathTree.Count == 0 || newCost + heuristic < currentNode.LowestCostToNode + currentNode.Heuristic)
+                            if (newCost + heuristic < currentNode.LowestCostToNode + currentNode.Heuristic)
                             {
                                 // Append the new edge to the existing path
                                 _shortestPathTree.Add(new Edge(currentNode.ID, candidateID));
@@ -131,7 +131,11 @@ namespace BossBattleCourseWork
                             float newCost = currentNode.LowestCostToNode + _graph.GetEdgeCost(candidateID);
                             int index = _nodeQueue.FindIndex(node => node.ID == candidateID);
 
-                            if (_nodeQueue[index].LowestCostToNode > newCost)
+                            // Calculate the difference between the new cost and the current cost
+                            float costDifference = _nodeQueue[index].LowestCostToNode - newCost;
+
+                            // Check if the new cost represents a substantial improvement
+                            if (costDifference > 0.1f)  // Adjust this threshold as needed
                             {
                                 _nodeQueue[index].LowestCostToNode = newCost;
 
@@ -141,6 +145,7 @@ namespace BossBattleCourseWork
                             }
                         }
                     }
+                    
                 }
 
                 _visitedNodes.Add(currentNode);

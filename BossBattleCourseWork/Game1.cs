@@ -19,6 +19,7 @@ namespace BossBattleCourseWork
         private Agent _agent2;
         private Agent _agent3;
         private Agent _agent4;
+        private Agent _agent5;
 
         private Graph _graph;
         private PathMap path;
@@ -28,6 +29,7 @@ namespace BossBattleCourseWork
         Patrol agent2Patrol;
         Patrol agent3Patrol;
         Patrol agent4Patrol;
+        Patrol agent5Patrol;
 
         public Game1()
         {
@@ -80,12 +82,16 @@ namespace BossBattleCourseWork
 
             _agent4 = new Agent(new Vector2(1050, 400), new Vector2(0, 0), 25, Color.Blue, 2);
             agent4Patrol = new Patrol(_player, _graph, Map, new Vector2(1050, 400), new Vector2(1050, 50), new Vector2(1450, 50), new Vector2(1450, 400));
+
+            _agent5 = new Agent(new Vector2(50, 50), new Vector2(0, 0), 25, Color.Blue, 2);
+            agent5Patrol = new Patrol(_player, _graph, Map, new Vector2(50, 50), new Vector2(50, 250), new Vector2(250, 250), new Vector2(250, 50));
             _agents = new List<Agent>
             {
                 _agent
                 , _agent2
                 , _agent3
                 , _agent4
+                , _agent5
             };
 
             _logic = new GameLogic(_agents, _player, Map);
@@ -97,10 +103,11 @@ namespace BossBattleCourseWork
         {
             path.NodeCreator(Map);
             path.CreateEdges();
-           // _agent.StateMachine.ChangeState(new IdleState(_player, Map, _graph));
+            _agent.StateMachine.ChangeState(new IdleState(_player, Map, _graph));
             _agent2.StateMachine.ChangeState(agent2Patrol);
             _agent3.StateMachine.ChangeState(agent3Patrol);
             _agent4.StateMachine.ChangeState(agent4Patrol);
+            _agent5.StateMachine.ChangeState(agent5Patrol);
         }
 
         protected override void Update(GameTime gameTime)
@@ -108,10 +115,11 @@ namespace BossBattleCourseWork
             float pSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _player.Update(pSeconds, Map);
 
-            _agent.StateMachine.Update(gameTime);
+            //_agent.StateMachine.Update(gameTime);
             _agent2.StateMachine.Update(gameTime);
             _agent3.StateMachine.Update(gameTime);
             _agent4.StateMachine.Update(gameTime);
+            _agent5.StateMachine.Update(gameTime);
 
             _logic.Update(gameTime, Map);
             if (_player.IsDead == true)
@@ -140,11 +148,23 @@ namespace BossBattleCourseWork
                 _shapeBatcher.DrawLine(new Vector2(0, j), new Vector2(1500, j), 1, Color.Pink);
             }
 
+            
+
+            // Draw edges
+            foreach (Edge edge in _graph.Edges)
+            {
+                _shapeBatcher.DrawLine(
+                    _graph.GetNode(edge.From).Position,
+                    _graph.GetNode(edge.To).Position,
+                    1,
+                    Color.Green
+                );
+            }
             foreach (Rectangle rectangle in Map)
             {
                 _shapeBatcher.Draw(rectangle);
             }
-            _shapeBatcher.Draw(_player, Color.Blue);
+            _shapeBatcher.Draw(_player, _player.Color);
             foreach (Agent agent in _agents)
             {
                 _shapeBatcher.Draw(agent, agent.Colour);

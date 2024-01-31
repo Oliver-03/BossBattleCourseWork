@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
+using Microsoft.Xna.Framework;
 using System.Reflection;
 
 namespace BossBattleCourseWork
@@ -14,8 +14,9 @@ namespace BossBattleCourseWork
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
         public float Radius { get; set; }
-        public float Speed = 70;
+        public float Speed = 80;
         public bool IsDead { get; set; }
+        public Color Color = Color.Blue;
 
         public Input Input = new Input()
         {

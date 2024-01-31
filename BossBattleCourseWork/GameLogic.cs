@@ -29,11 +29,12 @@ namespace BossBattleCourseWork
             {
                 NightTime(_agents, _player);
             }
+            else { _player.Color = Color.Blue; }
 
             // Update agent and player positions
             foreach (Agent agent in _agents)
             {
-                agent.Update(gameTime);
+                agent.Update(gameTime, _agents);
             }
 
             _player.Update(gameTime.ElapsedGameTime.Seconds, rectangle);
@@ -70,16 +71,17 @@ namespace BossBattleCourseWork
             double totalElapsedSeconds = gameTime.TotalGameTime.TotalSeconds;
 
             // Calculate the time within the 90-second cycle starting from the beginning of the game
-            double cycleTime = totalElapsedSeconds % 90;
+            double cycleTime = totalElapsedSeconds % 60;
 
             // Nighttime lasts for the last 30 seconds of the cycle
-            return cycleTime >= 60 && cycleTime < 90;
+            return cycleTime >= 45 && cycleTime < 60;
         }
         private void NightTime(List<Agent> agents, Player player)
         {
             IsNightTime = true;
             player.Speed = 100;
-            Debug.WriteLine("nighttime");
+            player.Color = Color.Black;
+            
         }
         private void AgentDeath(Player player)
         {
